@@ -1,15 +1,15 @@
-from knight import Knight, KNIGHT_STATUS, KNIGHT_COLOR
-from item import Item, ITEM_NAME
-from move import DIRECTION
-from board import Board
+from .item import Item, ITEM_NAME
+from .move import DIRECTION
+from .board import Board
 import json
+from .knight import Knight, Knight, KNIGHT_STATUS, KNIGHT_COLOR
 
 
 class Game:
     moved = False
 
-    def __init__(self):
-
+    def __init__(self, file_path="moves.txt"):
+        self.file_path = file_path
         self.board = Board()
         # Assign initial knights positions
         self.knights = {
@@ -35,6 +35,10 @@ class Game:
         self.board.set_item(x=5, y=2, item=self.items["M"])
         self.board.set_item(x=5, y=5, item=self.items["H"])
 
+    def play(self):
+        """
+        To ease testing
+        """
         self.moves = self.__parse_moves()
         self.moves = self.__make_moves()
         self.moves = self.__output_state()
@@ -45,7 +49,7 @@ class Game:
         Add moves knight moves to the list and return it 
         """
         moves: list[tuple[Knight, DIRECTION]] = []
-        with open('moves.txt', 'r') as f:
+        with open(self.file_path, 'r') as f:
             for line in f:
                 line = line.strip()
                 if line == 'GAME-START':
@@ -116,7 +120,7 @@ class Game:
                 if self.board.has_knight(x, y):
                     defender: Knight = self.board.get_knight(x, y)
                     won = self.__fight(attacker=knight, defender=defender)
-                    
+
                     if won:
                         defender.dead()
                         if (defender.item):  # if had an item
@@ -128,7 +132,6 @@ class Game:
                         if (knight.item):  # if had an item
                             knight.item.position = (x, y)
                             knight.remove_item()
-                        
 
     def __fight(self, attacker: Knight, defender: Knight):
         if defender.status == KNIGHT_STATUS.LIVE:

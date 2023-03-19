@@ -1,5 +1,5 @@
-from item import Item
-from knight import Knight
+from .item import Item
+from .knight import Knight
 
 
 class Board:

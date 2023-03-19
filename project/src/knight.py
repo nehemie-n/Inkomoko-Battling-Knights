@@ -1,5 +1,5 @@
 import enum
-from item import Item, ITEM_NAME
+from .item import Item, ITEM_NAME
 
 
 class KNIGHT_STATUS(enum.Enum):
@@ -12,7 +12,7 @@ class KNIGHT_COLOR(enum.Enum):
     R = "red"
     B = "blue"
     G = "green"
-    Y = "Yellow"
+    Y = "yellow"
 
 # colors = [KNIGHT_COLOR.__members__.get(color_str) for color_str in ["RED"]]
 # print(colors)
