@@ -1,6 +1,6 @@
 from .item import Item
 from .knight import Knight
-
+import operator
 
 class Board:
 
@@ -13,8 +13,11 @@ class Board:
         self.__board[x][y]["items"].append(item)
 
     def remove_item(self, x: int, y: int, item: Item):
-        self.__board[x][y]["items"].remove(item)
-
+        for i, _item in enumerate(self.__board[x][y]["items"]):
+            if _item.name._name_ == item.name._name_:
+                del self.__board[x][y]["items"][i]
+                break
+        
     def set_knight(self, x: int, y: int, knight: Knight):
         self.__board[x][y]["knight"] = knight
 
@@ -31,5 +34,7 @@ class Board:
         return len(self.__board[x][y]["items"]) > 0
     
     def pick_item(self,  x: int, y: int): 
-        self.__board[x][y]["items"] = sorted(self.__board[x][y]["items"], key='order')
+        print("HEREE ")
+        print(self.__board[x][y])
+        self.__board[x][y]["items"] = sorted(self.__board[x][y]["items"], key=operator.attrgetter('order'))
         return self.__board[x][y]["items"].pop()

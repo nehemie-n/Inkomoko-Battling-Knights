@@ -28,6 +28,9 @@ class Item:
         elif (self.name == ITEM_NAME.H):
             self.order = 1
 
+    def __str__(self) -> str:
+        return str(self.name)
+
     def __repr__(self):
         return f"{self.name} ({self.attack=}, {self.defense=})"
 

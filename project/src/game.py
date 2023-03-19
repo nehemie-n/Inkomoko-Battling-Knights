@@ -107,7 +107,9 @@ class Game:
 
             # if new position is perfect
             else:
-                knight.position = (x, y)
+                knight.change_position((x, y))
+                self.board.set_knight(x, y, knight=knight)
+                
                 if (knight.item):  # if had an item
                     knight.item.position = knight.position
 
@@ -136,7 +138,7 @@ class Game:
     def __fight(self, attacker: Knight, defender: Knight):
         if defender.status == KNIGHT_STATUS.LIVE:
             # Attack score
-            attacker_score = attacker.attack + 0.5
+            attacker_score = attacker.attack + 0.5 # element of surprise
             attacker_score = attacker_score + \
                 attacker.item.attack if attacker.item is not None else attacker_score
             # defense score
@@ -154,19 +156,19 @@ class Game:
         """
         if not self.moved:
             raise Exception("You haven't made moves yet!")
-        state = {}
+        self.state = {}
         for knight in self.knights.values():
-            state[str(knight.color._value_)] = [
+            self.state[str(knight.color._value_)] = [
                 str(list(knight.position)) if knight.position else None,
                 knight.status._name_,
-                knight.item,
+                str(knight.item) if knight.item else None,
                 knight.attack,
                 knight.defense
             ]
         for item in self.items.values():
-            state[str(item.name._value_)] = [
+            self.state[str(item.name._value_)] = [
                 str(list(item.position)),
                 item.is_equiped,
             ]
         with open('final_state.json', 'w') as f:
-            json.dump(state, f)
+            json.dump(self.state, f)
