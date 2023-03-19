@@ -3,17 +3,19 @@ import enum
 
 
 class ITEM_NAME(enum.Enum):
-    A = "Axe"
-    D = "Dagger"
-    H = "Helmet"
-    M = "Magic Stick"
+    A = "axe"
+    D = "dagger"
+    H = "helmet"
+    M = "magic stick"
 
 
 class Item:
-    def __init__(self, name: ITEM_NAME, attack=0, defense=0):
+    def __init__(self, name: ITEM_NAME, position: tuple[int, int], attack=0, defense=0):
         self.name = name
         self.attack: int = attack
         self.defense: int = defense
+        self.is_equiped: bool = False
+        self.position: tuple[int, int] = position
 
     def __repr__(self):
         return f"{self.name} ({self.attack=}, {self.defense=})"
@@ -24,3 +26,6 @@ class Item:
 
     def iis(self, name: ITEM_NAME):
         return self.name == name
+
+    def change_position(self, position: tuple[int, int]):
+        self.postion = position

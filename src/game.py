@@ -32,10 +32,16 @@ class Game:
         self.board[0][7] = self.knights["Y"]
 
         # assign initial items positions
-        self.board[2][2] = Item(ITEM_NAME.A, attack=2)
-        self.board[2][5] = Item(ITEM_NAME.D, attack=1)
-        self.board[5][2] = Item(ITEM_NAME.M, attack=1, defense=1)
-        self.board[5][5] = Item(ITEM_NAME.H, defense=1)
+        self.items = {
+            "A": Item(ITEM_NAME.A, attack=2, position=(2, 2)),
+            "D": Item(ITEM_NAME.D, attack=1, position=(2, 5)),
+            "M": Item(ITEM_NAME.M, attack=1, defense=1, position=(5, 2)),
+            "H": Item(ITEM_NAME.H, defense=1, position=(5, 5)),
+        }
+        self.board[2][2] = self.items["A"]
+        self.board[2][5] = self.items["D"]
+        self.board[5][2] = self.items["M"]
+        self.board[5][5] = self.items["H"]
 
         self.moves = self.parse_moves()
 
@@ -72,43 +78,19 @@ class Game:
     def output_state(self):
         if not self.moved:
             raise Exception("You haven't made moves yet!")
-        state = {
-            "magic_staff": [],
-            "helmet": [],
-            "dagger": [],
-            "axe": [],
-        }
+        state = {}
         for knight in self.knights.values():
-            state[knight.color] = [
-                str(knight.position),
-                knight.status,
+            state[str(knight.color._value_)] = [
+                str(list(knight.position)),
+                knight.status._name_,
                 knight.item,
                 knight.attack,
                 knight.defense
             ]
+        for item in self.items.values():
+            state[str(item.name._value_)] = [
+                str(list(item.position)),
+                item.is_equiped,
+            ]
         with open('final_state.json', 'w') as f:
             json.dump(state, f)
-
-    def move_knight(self, knight: Knight, direction):
-        if knight.status != "LIVE":
-            return
-        x, y = knight.position
-        if direction == DIRECTION.N:
-            x -= 1
-        elif direction == DIRECTION.E:
-            y += 1
-        elif direction == DIRECTION.S:
-            x += 1
-        elif direction == DIRECTION.W:
-            y -= 1
-        if not (0 <= x <= 7 and 0 <= y <= 7):
-            return
-        new_position = (x, y)
-
-        for other_color in self.knights:
-            if other_color == color:
-                continue
-            other_knight = self.knights[other_color]
-            if other_knight.position == new_position:
-                return
-        knight.position = new_position

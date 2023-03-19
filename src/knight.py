@@ -9,10 +9,10 @@ class KNIGHT_STATUS(enum.Enum):
 
 
 class KNIGHT_COLOR(enum.Enum):
-    R = "R"
-    B = "B"
-    G = "G"
-    Y = "Y"
+    R = "red"
+    B = "blue"
+    G = "green"
+    Y = "Yellow"
 
 # colors = [KNIGHT_COLOR.__members__.get(color_str) for color_str in ["RED"]]
 # print(colors)
