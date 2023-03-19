@@ -1,14 +1,8 @@
-from knight import Knight, KNIGHT_COLOR
+from knight import Knight, KNIGHT_STATUS, KNIGHT_COLOR
 from item import Item, ITEM_NAME
-import enum
+from move import DIRECTION
+from board import Board
 import json
-
-
-class DIRECTION(enum.Enum):
-    N = "UP"
-    E = "RIGHT"
-    S = "DOWN"
-    W = "LEFT"
 
 
 class Game:
@@ -16,9 +10,7 @@ class Game:
 
     def __init__(self):
 
-        # Define the initial state of the board
-        self.board = [[' ' for _ in range(8)] for _ in range(8)]
-
+        self.board = Board()
         # Assign initial knights positions
         self.knights = {
             "R": Knight(KNIGHT_COLOR.R, (0, 0)),
@@ -26,10 +18,10 @@ class Game:
             "G": Knight(KNIGHT_COLOR.G, (7, 7)),
             "Y": Knight(KNIGHT_COLOR.Y, (0, 7)),
         }
-        self.board[0][0] = self.knights["R"]
-        self.board[7][0] = self.knights["B"]
-        self.board[7][7] = self.knights["G"]
-        self.board[0][7] = self.knights["Y"]
+        self.board.set_knight(x=0, y=0, knight=self.knights["R"])
+        self.board.set_knight(x=7, y=0, knight=self.knights["B"])
+        self.board.set_knight(x=7, y=7, knight=self.knights["G"])
+        self.board.set_knight(x=0, y=7, knight=self.knights["Y"])
 
         # assign initial items positions
         self.items = {
@@ -38,14 +30,16 @@ class Game:
             "M": Item(ITEM_NAME.M, attack=1, defense=1, position=(5, 2)),
             "H": Item(ITEM_NAME.H, defense=1, position=(5, 5)),
         }
-        self.board[2][2] = self.items["A"]
-        self.board[2][5] = self.items["D"]
-        self.board[5][2] = self.items["M"]
-        self.board[5][5] = self.items["H"]
+        self.board.set_item(x=2, y=2, item=self.items["A"])
+        self.board.set_item(x=2, y=5, item=self.items["D"])
+        self.board.set_item(x=5, y=2, item=self.items["M"])
+        self.board.set_item(x=5, y=5, item=self.items["H"])
 
-        self.moves = self.parse_moves()
+        self.moves = self.__parse_moves()
+        self.moves = self.__make_moves()
+        self.moves = self.__output_state()
 
-    def parse_moves(self):
+    def __parse_moves(self):
         """
         Parse the input file
         Add moves knight moves to the list and return it 
@@ -65,23 +59,102 @@ class Game:
                     moves.append((knight, direction))  # Add
         return moves
 
-    def make_moves(self):
+    def __make_moves(self):
         """
         Make the game moves
         """
         if not self.moved:
             for move in self.moves:
                 print(move)
-                self.move_knight(knight=move[0], direction=move[1])
+                self.__move_knight(knight=move[0], direction=move[1])
         self.moved = True
 
-    def output_state(self):
+    def __move_knight(self, knight: Knight, direction):
+        """
+        Move a certain knight into a certain direction
+        """
+        if (knight.is_alive()):
+            """Move the knight in a certain direction provided"""
+            px, py = knight.position
+            x, y = knight.position
+            # Baord
+            self.board.remove_knight(x, y)  # Remove knight from prev position
+            if (knight.item):
+                # Remove item from prev position
+                self.board.remove_item(x, y, knight.item)
+
+            # Make moves
+            if direction == DIRECTION.N:
+                x -= 1
+            elif direction == DIRECTION.E:
+                y += 1
+            elif direction == DIRECTION.S:
+                x += 1
+            elif direction == DIRECTION.W:
+                y -= 1
+
+            # if drawned
+            if not (0 <= x <= 7 and 0 <= y <= 7):
+                if (knight.item):
+                    # item stays in the position before drawn
+                    knight.item.position = knight.position
+                    knight.remove_item()
+                knight.drawn()
+
+            # if new position is perfect
+            else:
+                knight.position = (x, y)
+                if (knight.item):  # if had an item
+                    knight.item.position = knight.position
+
+                # if the board has an item here pick it
+                if self.board.has_items(x, y):
+                    if (knight.item is None):  # if we didn't have item before pick one
+                        knight.equip_item(self.board.pick_item(x, y))
+
+                # if this position has a knight before
+                if self.board.has_knight(x, y):
+                    defender: Knight = self.board.get_knight(x, y)
+                    won = self.__fight(attacker=knight, defender=defender)
+                    
+                    if won:
+                        defender.dead()
+                        if (defender.item):  # if had an item
+                            defender.item.position = (x, y)
+                            defender.remove_item()
+                        self.board.set_knight(x, y, knight)
+                    else:
+                        knight.dead()
+                        if (knight.item):  # if had an item
+                            knight.item.position = (x, y)
+                            knight.remove_item()
+                        
+
+    def __fight(self, attacker: Knight, defender: Knight):
+        if defender.status == KNIGHT_STATUS.LIVE:
+            # Attack score
+            attacker_score = attacker.attack + 0.5
+            attacker_score = attacker_score + \
+                attacker.item.attack if attacker.item is not None else attacker_score
+            # defense score
+            defender_score = defender.defense + \
+                defender.item.defense if defender.item is not None else defender.defense
+            #
+            if attacker_score > defender_score:
+                return True
+            else:
+                return False
+
+    def __output_state(self):
+        """
+        Dumps the output in the .json file
+        """
         if not self.moved:
             raise Exception("You haven't made moves yet!")
         state = {}
         for knight in self.knights.values():
             state[str(knight.color._value_)] = [
-                str(list(knight.position)),
+                str(list(knight.position)) if knight.position else None,
                 knight.status._name_,
                 knight.item,
                 knight.attack,

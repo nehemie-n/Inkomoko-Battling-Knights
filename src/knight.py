@@ -31,29 +31,27 @@ class Knight:
         return f"{self.color} {self.status} {self.item} {self.attack} {self.defense}"
 
     def equip_item(self, item: Item):
+        item.is_equiped = True
         self.item = item
 
     def remove_item(self):
+        self.item.is_equiped = False
         self.item = None
 
-    def fight(self, defender):
-        if defender.status == KNIGHT_STATUS.LIVE:
-            # Attack score
-            attacker_score = self.attack + 0.5
-            attacker_score = attacker_score + \
-                self.item.attack if self.item is not None else attacker_score
-            # defense score
-            defender_score = defender.defense + \
-                defender.item.defense if defender.item is not None else defender.defense
-            #
-            if attacker_score > defender_score:
-                defender.status = KNIGHT_STATUS.DEAD
-                defender.remove_item()
-                return True
-            else:
-                self.status = KNIGHT_STATUS.DEAD
-                self.remove_item()
-                return False
-
     def is_alive(self):
-        pass
+        """Is the knight still alive"""
+        return not self.status != KNIGHT_STATUS.LIVE
+
+    def drawn(self):
+        self.position = None
+        self.status = KNIGHT_STATUS.DROWNED
+        self.attack = 0
+        self.defense = 0
+
+    def dead(self):
+        self.status = KNIGHT_STATUS.DEAD
+        self.attack = 0
+        self.defense = 0
+
+    def change_position(self, position: tuple[int, int]):
+        self.postion = position
