@@ -10,17 +10,17 @@ class ITEM_NAME(enum.Enum):
 
 
 class Item:
-    def __init__(self, name: ITEM_NAME, attack=0, defence=0):
+    def __init__(self, name: ITEM_NAME, attack=0, defense=0):
         self.name = name
         self.attack: int = attack
-        self.defence: int = defence
+        self.defense: int = defense
 
     def __repr__(self):
-        return f"{self.name} ({self.attack=}, {self.defence=})"
+        return f"{self.name} ({self.attack=}, {self.defense=})"
 
-    def apply_bonus(self, attack, defence):
+    def apply_bonus(self, attack, defense):
         self.attack += attack
-        self.defence += defence
+        self.defense += defense
 
     def iis(self, name: ITEM_NAME):
         return self.name == name
