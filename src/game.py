@@ -80,7 +80,7 @@ class Game:
         }
         for knight in self.knights.values():
             state[knight.color] = [
-                knight.position,
+                str(knight.position),
                 knight.status,
                 knight.item,
                 knight.attack,
@@ -89,3 +89,26 @@ class Game:
         with open('final_state.json', 'w') as f:
             json.dump(state, f)
 
+    def move_knight(self, knight: Knight, direction):
+        if knight.status != "LIVE":
+            return
+        x, y = knight.position
+        if direction == DIRECTION.N:
+            x -= 1
+        elif direction == DIRECTION.E:
+            y += 1
+        elif direction == DIRECTION.S:
+            x += 1
+        elif direction == DIRECTION.W:
+            y -= 1
+        if not (0 <= x <= 7 and 0 <= y <= 7):
+            return
+        new_position = (x, y)
+
+        for other_color in self.knights:
+            if other_color == color:
+                continue
+            other_knight = self.knights[other_color]
+            if other_knight.position == new_position:
+                return
+        knight.position = new_position
