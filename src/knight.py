@@ -1,5 +1,5 @@
 import enum
-from .item import Item
+from .item import Item, ITEM_NAME
 
 
 class KNIGHT_STATUS(enum.Enum):
@@ -9,10 +9,10 @@ class KNIGHT_STATUS(enum.Enum):
 
 
 class KNIGHT_COLOR(enum.Enum):
-    R = "RED"
-    B = "BLUE"
-    G = "GREEN"
-    Y = "YELLOW"
+    RED = "R"
+    BLUE = "B"
+    GREEN = "G"
+    YELLOW = "Y"
 
 
 class Knight:
@@ -28,26 +28,28 @@ class Knight:
         return f"{self.color} {self.status} {self.item} {self.attack} {self.defense}"
 
     def equip_item(self, item: Item):
-        if item == "A":
+        if item.iis(ITEM_NAME.A):
             self.attack += 2
-        elif item == "D":
+        elif item.iis(ITEM_NAME.D):
             self.attack += 1
-        elif item == "H":
+        elif item.iis(ITEM_NAME.H):
             self.defense += 1
-        elif item == "M":
+        elif item.iis(ITEM_NAME.M):
             self.attack += 1
             self.defense += 1
         self.item = item
 
     def remove_item(self):
-        if self.item == "A":
-            self.attack -= 2
-        elif self.item == "D":
-            self.attack -= 1
-        elif self.item in ["H", "M"]:
-            self.defense -= 1
-            if self.item == "M":
+        if (self.item):
+            if self.item.iis(ITEM_NAME.A):
+                self.attack -= 2
+            elif self.item.iis(ITEM_NAME.D):
                 self.attack -= 1
+            elif self.item.iis(ITEM_NAME.H):
+                self.defense -= 1
+            if self.item.iis(ITEM_NAME.M):
+                self.attack -= 1
+                self.defense -= 1
         self.item = None
 
     def fight(self, other):
@@ -62,3 +64,6 @@ class Knight:
                 self.status = KNIGHT_STATUS.DEAD
                 self.remove_item()
                 return False
+            
+    def is_alive(self):
+        pass
