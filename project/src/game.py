@@ -77,7 +77,9 @@ class Game:
         """
         Move a certain knight into a certain direction
         """
+        print("MOVED __move_knight")
         if (knight.is_alive()):
+            print("MOVED ALIVE __move_knight")
             """Move the knight in a certain direction provided"""
             px, py = knight.position
             x, y = knight.position
@@ -90,13 +92,14 @@ class Game:
             # Make moves
             if direction == DIRECTION.N:
                 x -= 1
-            elif direction == DIRECTION.E:
-                y += 1
             elif direction == DIRECTION.S:
                 x += 1
+            elif direction == DIRECTION.E:
+                y += 1
             elif direction == DIRECTION.W:
                 y -= 1
 
+            print("MOVED POSITION ", x, " ", y)
             # if drawned
             if not (0 <= x <= 7 and 0 <= y <= 7):
                 if (knight.item):
@@ -106,10 +109,10 @@ class Game:
                 knight.drawn()
 
             # if new position is perfect
+            # @todo refactor, move codes the codes where a knight has an element in the knight class
             else:
                 knight.change_position((x, y))
-                self.board.set_knight(x, y, knight=knight)
-                
+
                 if (knight.item):  # if had an item
                     knight.item.position = knight.position
 
@@ -120,6 +123,7 @@ class Game:
 
                 # if this position has a knight before
                 if self.board.has_knight(x, y):
+                    print("HAS KNIGHT ", self.board.get_knight(x, y))
                     defender: Knight = self.board.get_knight(x, y)
                     won = self.__fight(attacker=knight, defender=defender)
 
@@ -135,10 +139,15 @@ class Game:
                             knight.item.position = (x, y)
                             knight.remove_item()
 
+                else:
+                    # In the end update the board with new
+                    self.board.set_knight(x, y, knight=knight)
+
     def __fight(self, attacker: Knight, defender: Knight):
+        """Fighting for knights"""
         if defender.status == KNIGHT_STATUS.LIVE:
             # Attack score
-            attacker_score = attacker.attack + 0.5 # element of surprise
+            attacker_score = attacker.attack + 0.5  # element of surprise
             attacker_score = attacker_score + \
                 attacker.item.attack if attacker.item is not None else attacker_score
             # defense score

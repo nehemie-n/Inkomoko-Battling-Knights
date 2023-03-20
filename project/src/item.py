@@ -42,4 +42,4 @@ class Item:
         return self.name == name
 
     def change_position(self, position: tuple[int, int]):
-        self.postion = position
+        self.position = position

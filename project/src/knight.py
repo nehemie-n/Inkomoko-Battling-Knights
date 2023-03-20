@@ -54,4 +54,5 @@ class Knight:
         self.defense = 0
 
     def change_position(self, position: tuple[int, int]):
-        self.postion = position
+        print("MOVED KNIGHT ", position)
+        self.position = position
