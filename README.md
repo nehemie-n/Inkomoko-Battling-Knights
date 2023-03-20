@@ -6,10 +6,13 @@ To run and test the codes/game codes you will need to have python installed. If 
 
 The command for running the codes and seeing the output is is
 
-`python -m project.src.main`
-<br> Or just
-<br>
-`make run` if you are familira with Makefiles
+    python -m project.src.main
+
+Or just
+
+    make run 
+
+If you are familiar with Makefile(s)
 
 <br>
 
@@ -17,10 +20,11 @@ The command for running the codes and seeing the output is is
 
 The command for running unit tests is
 
-`python -m unittest discover -s tests -t project`
-<br>
-or just <br>
-`make run_tests`
+    python -m unittest discover -s tests -t project
+    
+Or just 
+
+    make run_tests
 
 
 <br>
